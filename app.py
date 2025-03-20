@@ -1,10 +1,14 @@
 from flask import Flask, request, jsonify
 from google.cloud import storage
+from flask_cors import CORS  # Dodajemo CORS
 
 app = Flask(__name__)
 
 # Povezivanje sa Google Cloud Storage
-BUCKET_NAME = "my-files-marketplace"
+BUCKET_NAME = "filipbajevic1"  # Tvoj bucket name
+
+# Omogućavanje CORS-a za sve domene (ili specifično za Webflow)
+CORS(app)
 
 def upload_to_gcs(file, destination_blob_name):
     """Upload fajla na Google Cloud Storage"""
@@ -17,15 +21,18 @@ def upload_to_gcs(file, destination_blob_name):
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-    
-    file = request.files['file']
-    destination_blob_name = f"uploads/{file.filename}"
-    
-    file_url = upload_to_gcs(file, destination_blob_name)
-    
-    return jsonify({"message": "File uploaded", "file_url": file_url})
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
+
+        file = request.files['file']
+        destination_blob_name = f"uploads/{file.filename}"
+
+        file_url = upload_to_gcs(file, destination_blob_name)
+
+        return jsonify({"message": "File uploaded", "file_url": file_url})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/')
 def home():
