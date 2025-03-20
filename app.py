@@ -1,14 +1,14 @@
 from flask import Flask, request, jsonify
 from google.cloud import storage
-from flask_cors import CORS  # Dodajemo CORS
+from flask_cors import CORS  # Uvozimo CORS
 
 app = Flask(__name__)
 
-# Povezivanje sa Google Cloud Storage
-BUCKET_NAME = "filipbajevic1"  # Tvoj bucket name
+# Omogućavanje CORS za sve domene (možeš biti specifičniji ako želiš)
+CORS(app, resources={r"/*": {"origins": "*"}})  # Dozvoljava sve domene
 
-# Omogućavanje CORS-a za sve domene (ili specifično za Webflow)
-CORS(app)
+# Povezivanje sa Google Cloud Storage
+BUCKET_NAME = "filipbajevic1"
 
 def upload_to_gcs(file, destination_blob_name):
     """Upload fajla na Google Cloud Storage"""
@@ -40,3 +40,5 @@ def home():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
+
+
